@@ -1,4 +1,4 @@
-This program is a mock version of the Pagerank Algorithm. There are 3 sample corpuses (see corpus files) included and the program outputs the respective 
+This program is a mock version of the Pagerank Algorithm. There are 3 sample corpuses (see corpus0/1/2 files) included and the program outputs the respective 
 PageRank for each of the sample HTML files.
 
 Here is a demo of the program in action:
