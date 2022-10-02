@@ -1,5 +1,3 @@
-This is a Java implementation of the popular 'Street Fighter' game. Players can jump, throw fireballs, block attacks, and kick their opponents.
-
 For my Grade 12 Computer Science course’s Culminating Task, I had to create some sort of game using the Java programming language. I chose to recreate a version of the popular platformer game, Street Fighter, which is similar to games like Injustice and Mortal Kombat. It is a 2 player game and the goal is to knock out your opponent. However, instead of being a simple boxing match, players can use cool abilities to aid them in their task. In my version of the game, players can ‘hadouken’ (which is game talk for throwing a fireball), kick, block, and jump.
 
 Here is a demo of the game in action:
