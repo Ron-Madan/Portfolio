@@ -3,7 +3,17 @@ This program simulates a City-like environment in which there are randomly place
 The program shifts the hospitals around in an optimal manner to reduce the total 'Emergency Cost' for all families. The 'Emergency Cost' is the distance
 travelled (horizontal and vertical units) by every family to get to their closest respective hospital.
 
-Example:
+<br />
+
+Example 1:
+
+--> Here is a demo of the project in action:
+<br />
+https://youtu.be/-2IW8MXKVQc
+
+<br />
+
+Example 2:
 
 --> Random Generation (State 0):
 
