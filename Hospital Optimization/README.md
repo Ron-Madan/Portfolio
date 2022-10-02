@@ -1,6 +1,6 @@
 This program simulates a City-like environment in which there are randomly placed Hospitals (denoted as "H") and Families (denoted as "F").
 
-The program shifts the hospitals around in an optimal manner to reduce the total 'Emergency Cost' for all families. The 'Emergency Cost' is the distance
+The program shifts the hospitals around in an optimal manner to reduce the total 'Emergency Cost' for all families. The 'Emergency Cost' is defined as the distance
 travelled (horizontal and vertical units) by every family to get to their closest respective hospital.
 
 <br />
