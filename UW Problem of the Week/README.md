@@ -1,4 +1,4 @@
-**This program is an automized solution to the University of Waterloo's Problem of the Week #3.**<br />
+**This program is an automated solution to the University of Waterloo's Problem of the Week #3.**<br />
 
 You can access the problem PDF at this site: https://www.cemc.uwaterloo.ca/resources/potw/2022-23/English/POTWE-22-C-03-P.pdf
 
