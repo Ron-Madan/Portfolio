@@ -1,10 +1,8 @@
-This program is an automized solution to the University of Waterloo's Problem of the Week #3. 
+**This program is an automized solution to the University of Waterloo's Problem of the Week #3.**<br />
 
 You can access the problem PDF at this site: https://www.cemc.uwaterloo.ca/resources/potw/2022-23/English/POTWE-22-C-03-P.pdf
 
-
-
-Here are relevant screenshots from the problem description:
+Here are relevant screenshots from the problem description:<br/>
 
 <img width="1234" alt="Screen Shot 2022-10-06 at 2 01 54 PM" src="https://user-images.githubusercontent.com/37419003/194385987-15df646d-ad08-4d9c-8519-ff2e115e66ff.png">
 
