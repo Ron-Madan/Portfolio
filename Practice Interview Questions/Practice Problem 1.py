@@ -63,14 +63,14 @@ def min_distance(blocks: list[dict[str, bool]], index: int, req: str) -> int:
 	"""
 
 	# Defining Index Values
-	left_index = index + 1
-	right_index = index - 1
+	left_index = index + 1 # Checking current index as well
+	right_index = index
 
 	# Running While Loop to Search for Req
 	while True:
 
 		# Checking Left Side of Index
-		if left_index > 1:
+		if left_index > 0:
 
 			# Shifting Index to Left
 			left_index -= 1
@@ -83,7 +83,7 @@ def min_distance(blocks: list[dict[str, bool]], index: int, req: str) -> int:
 
 
 		# Checking Right Side of Index
-		if right_index < len(blocks) - 2:
+		if right_index < len(blocks) - 1:
 
 			# Shifting Index to Right
 			right_index += 1
@@ -115,7 +115,7 @@ def max_distance(blocks: list[dict[str, bool]], index: int, missing: set[str]) -
 def best_index(blocks: list[dict[str, bool]], reqs: list[str]) -> int:
 	"""
 	Returns the best index to live at given the 'blocks' buildings and
-	'req' required amenities.
+	'reqs' required amenities.
 	"""
 
 	# Finding Missing Amenities
@@ -215,8 +215,4 @@ if __name__ == '__main__':
 	reqs = ["gym", "school", "store"]
 
 	# Testing Function
-	print(f"Best Index: {best_index(blocks, reqs)}")
-
-
-
-
+	print(f"Best Index: {best_index(blocks, reqs)}") # Best Index: 7 (max distance = 1)
