@@ -4,6 +4,8 @@ Created by Raunak Madan, Guransh Singh, Nauhar Kapur and Shahbaz Nanda.
 
 This project takes in your movie ratings and provides you recommendations through graph analysis on over 100k ratings.
 
+Your recommendations will include IMDb ratings, trailer links and purchase links.
+
 Input:
 <img width="1413" alt="Input" src="https://github.com/Ron-Madan/Portfolio/assets/37419003/3bdabed4-a911-48cb-8b40-bf4586c19eb3">
 
