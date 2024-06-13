@@ -7,5 +7,4 @@ This is a portfolio of past coding projects I have developed. Please feel free t
 I am always available through my LinkedIn: https://www.LinkedIn.com/in/Raunak-Madan or via email: Ron.Madan@mail.utoronto.ca
 
 Best,
-
 Raunak.
