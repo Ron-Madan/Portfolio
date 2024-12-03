@@ -53,7 +53,6 @@ const Game = () => {
   const handleSubmitGuess = () => {
     // Check for duplicate colors and empty sequence
     const nonNullColors = board[currentRow].filter((color) => color !== null);
-    console.log(nonNullColors.length);
     if (nonNullColors.length === 0) {
       setErrorMessage("You cannot submit an empty guess.");
       return;
