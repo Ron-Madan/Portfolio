@@ -52,6 +52,7 @@ const renderFeedbackCircles = (feedback) => {
     }
   } else {
     const [correctPosition, correctColor] = feedback;
+    console.log(feedback);
 
     // Add black circles for correct position
     for (let i = 0; i < correctPosition; i++) {
