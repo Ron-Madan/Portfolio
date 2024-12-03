@@ -30,8 +30,9 @@ export default class Guess {
         incorrectColors++;
       }
     });
-    if (incorrectColors !== 5 - correctColors - correctPosition) {
-      console.log('Error: Incorrect colors count is wrong');
+    if ((incorrectColors + correctColors + correctPosition) !== 5) {
+      console.log('Error: Compare function has bug!');
+      console.log(1 / 0);
       return -1;
     }
   
