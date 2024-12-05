@@ -32,7 +32,7 @@ const Game = () => {
       let baseLeftPosition;
       const screenWidth = window.innerWidth;
       if (screenWidth <= 300) {
-        baseLeftPosition = screenWidth / 6;
+        baseLeftPosition = 15;
       } else if (screenWidth <= 480) {
         baseLeftPosition = screenWidth / 5;
       } else if (screenWidth <= 768) {
