@@ -31,11 +31,11 @@ const Game = () => {
       // Dynamically adjust positions based on screen width
       let baseLeftPosition;
       const screenWidth = window.innerWidth;
-      if (screenWidth <= 480) {
-        // Small screens (mobile)
-        baseLeftPosition = screenWidth / 4.5;
+      if (screenWidth <= 300) {
+        baseLeftPosition = screenWidth / 6;
+      } else if (screenWidth <= 480) {
+        baseLeftPosition = screenWidth / 5;
       } else if (screenWidth <= 768) {
-        // Medium screens (tablet)
         baseLeftPosition = screenWidth / 4.5;
       } else {
         // Large screens (desktop)
