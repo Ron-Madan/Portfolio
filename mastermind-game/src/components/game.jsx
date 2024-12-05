@@ -31,10 +31,8 @@ const Game = () => {
       // Dynamically adjust positions based on screen width
       let baseLeftPosition;
       const screenWidth = window.innerWidth;
-      if (screenWidth <= 300) {
-        baseLeftPosition = 15;
-      } else if (screenWidth <= 480) {
-        baseLeftPosition = screenWidth / 5;
+      if (screenWidth <= 480) {
+        baseLeftPosition = 10;
       } else if (screenWidth <= 768) {
         baseLeftPosition = screenWidth / 4.5;
       } else {
