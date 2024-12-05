@@ -27,11 +27,25 @@ const Game = () => {
   const handleCellClick = (rowIndex, colIndex) => {
     if (rowIndex === currentRow && !gameOver) {
       setSelectedCell({ rowIndex, colIndex }); // Track the cell being edited
-
-      // Calculate the position of the color picker relative to the selected cell
+  
+      // Dynamically adjust positions based on screen width
+      let baseLeftPosition;
+      const screenWidth = window.innerWidth;
+      if (screenWidth <= 480) {
+        // Small screens (mobile)
+        baseLeftPosition = screenWidth / 4.5;
+      } else if (screenWidth <= 768) {
+        // Medium screens (tablet)
+        baseLeftPosition = screenWidth / 4.5;
+      } else {
+        // Large screens (desktop)
+        baseLeftPosition = screenWidth / 3;
+      }
+  
+      // Calculate the position of the color picker
       const topPosition = (10 - rowIndex) * (cellSize + gap);
-      const leftPosition = 500 + colIndex * (cellSize + gap);
-
+      const leftPosition = baseLeftPosition + colIndex * (cellSize + gap);
+  
       setColorPickerPosition({
         top: topPosition,
         left: leftPosition,
