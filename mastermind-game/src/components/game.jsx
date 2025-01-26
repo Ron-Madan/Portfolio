@@ -20,34 +20,14 @@ const Game = () => {
   const [errorMessage, setErrorMessage] = useState(null); // Store error message for duplicates
   const [isAIGuessing, setIsAIGuessing] = useState(false); // Track if AI guess is being processed
   const [won, setWon] = useState(false); // Track if the user has won
+  const [isThinking, setIsThinking] = useState(false);
 
   const cellSize = 40;
   const gap = 10;
 
   const handleCellClick = (rowIndex, colIndex) => {
     if (rowIndex === currentRow && !gameOver) {
-      setSelectedCell({ rowIndex, colIndex }); // Track the cell being edited
-  
-      // Dynamically adjust positions based on screen width
-      let baseLeftPosition;
-      const screenWidth = window.innerWidth;
-      if (screenWidth <= 480) {
-        baseLeftPosition = 10;
-      } else if (screenWidth <= 768) {
-        baseLeftPosition = screenWidth / 4.5;
-      } else {
-        // Large screens (desktop)
-        baseLeftPosition = screenWidth / 3;
-      }
-  
-      // Calculate the position of the color picker
-      const topPosition = (10 - rowIndex) * (cellSize + gap);
-      const leftPosition = baseLeftPosition + colIndex * (cellSize + gap);
-  
-      setColorPickerPosition({
-        top: topPosition,
-        left: leftPosition,
-      });
+      setSelectedCell({ rowIndex, colIndex });
     }
   };
 
@@ -83,23 +63,29 @@ const Game = () => {
 
     // Check if all feedback is correct (5 correct positions)
     if (guessFeedback[0] === 5) {
-      setWon(true); // User has won, show the message
-      setGameOver(true);  // End the game if all positions are correct
+      setWon(true);
+      setGameOver(true);
+    } else if (currentRow === 9) { // Check if this was the last row
+      setGameOver(true); // End game if we've used all rows
     } else {
       setCurrentRow(currentRow + 1);
     }
   };
 
-  const handleAIHint = () => {
-    setIsAIGuessing(true);  // Set AI guess processing state to true
-    const nextGuess = getNextGuess(history, allPossibleCodes);  // Pass possible codes to AI
-    const newBoard = [...board];
-    newBoard[currentRow] = nextGuess;
-    setBoard(newBoard);
+  const handleAIHint = async () => {
+    setIsThinking(true);  // Start thinking state
+    setIsAIGuessing(true);
 
+    // Wrap the AI logic in a setTimeout to ensure UI updates first
     setTimeout(() => {
-      setIsAIGuessing(false); // Reset the AI guessing state after a short delay
-    }, 500);  // Simulate a delay for rendering the AI guess (e.g., 500ms)
+      const nextGuess = getNextGuess(history, allPossibleCodes);
+      const newBoard = [...board];
+      newBoard[currentRow] = nextGuess;
+      setBoard(newBoard);
+      
+      setIsThinking(false);  // End thinking state
+      setIsAIGuessing(false);
+    }, 100);
   };
 
   const handleNewGame = () => {
@@ -115,48 +101,175 @@ const Game = () => {
     setAllPossibleCodes(getAllPossibleCodes());  // Generate all possible codes
   };
 
-  const disableButtons = gameOver || currentRow === 10 || isAIGuessing; // Disable buttons if game is over, last row reached, or AI guess is being processed
+  const disableButtons = gameOver || currentRow === 10 || isAIGuessing || isThinking;
 
   return (
-    <div style={{ textAlign: 'center' }}>
-      <h1 style={{ marginBottom: '20px', position: 'relative', left: '10px' }}>Mastermind Game</h1>
+    <div className="game-container" style={{ 
+      padding: '2rem',
+      maxWidth: '1000px',
+      margin: '0 auto',
+      minHeight: '100vh',
+      display: 'flex',
+      flexDirection: 'column',
+      fontFamily: "'Poppins', sans-serif",
+      backgroundColor: '#f8f9fa',
+    }}>
+      <header style={{
+        textAlign: 'center',
+        marginBottom: '2rem',
+        position: 'sticky',
+        top: 0,
+        backgroundColor: '#f8f9fa',
+        padding: '1rem',
+        zIndex: 5,
+      }}>
+        <h1 style={{ 
+          color: '#2c3e50',
+          fontSize: '2.5rem',
+          fontWeight: '600',
+          margin: 0,
+        }}>
+          Mastermind
+        </h1>
+      </header>
 
-      {/* Display congratulatory message if the user wins */}
-      {won && <div style={{ color: 'green', fontSize: '20px' }}>Congratulations! You've won!</div>}
-
-      <Board 
-        board={board} 
-        feedback={feedback} 
-        onCellClick={handleCellClick} 
-        currentRow={currentRow} // Pass the currentRow to Board to highlight it
-      />
-
-      {/* Only show color picker when a cell is selected */}
-      {selectedCell && !gameOver && (
-        <div
-          className="color-picker-container"
-          style={{
-            position: 'absolute',
-            top: `${colorPickerPosition.top}px`,
-            left: `${colorPickerPosition.left}px`,
-            zIndex: 100,
-          }}
-        >
-          <ColorPicker selectedColor={selectedColor} onColorSelect={handleColorSelect} />
+      {(won || (gameOver && !won)) && (
+        <div style={{ 
+          color: won ? '#27ae60' : '#e74c3c', // Green for win, red for loss
+          fontSize: '1.5rem',
+          fontWeight: '600',
+          padding: '1.5rem',
+          backgroundColor: won ? '#d4edda' : '#fde2e2', // Green bg for win, red bg for loss
+          borderRadius: '8px',
+          textAlign: 'center',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+          position: 'fixed',
+          zIndex: 1000,
+          width: '100%',
+          maxWidth: '600px',
+          left: '50%',
+          top: '50%',
+          transform: 'translate(-50%, -50%)',
+        }}>
+          {won ? '🎉 Congratulations! You\'ve won! 🎉' : '😔 Game Over! Try again! 😔'}
         </div>
       )}
 
-      {/* Submit button for the current guess */}
-      <button onClick={handleSubmitGuess} disabled={disableButtons}>Submit Guess</button>
+      <div style={{
+        position: 'relative',
+        flex: 1,
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        marginTop: '110px',
+      }}>
+        <div style={{
+          display: 'flex',
+          alignItems: 'flex-start',
+          gap: '2rem',
+          width: '100%',
+          justifyContent: 'center',
+        }}>
+          <Board 
+            board={board} 
+            feedback={feedback} 
+            onCellClick={handleCellClick} 
+            currentRow={currentRow}
+          />
 
-      {/* AI Hint button */}
-      <button onClick={handleAIHint} disabled={disableButtons}>Get AI Hint</button>
+          {selectedCell && !gameOver && (
+            <div
+              className="color-picker-container"
+              style={{
+                position: 'absolute',
+                left: '50%', // Center horizontally
+                transform: 'translateX(-50%)', // Adjust for perfect centering
+                top: `${(11 - selectedCell.rowIndex) * 48}px`, // Position it one row above current
+                zIndex: 10, // Ensure it appears above the board
+                backgroundColor: 'white', // Optional: add background
+                padding: '8px',
+                borderRadius: '8px',
+                boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)', // Optional: add shadow
+              }}
+            >
+              <ColorPicker selectedColor={selectedColor} onColorSelect={handleColorSelect} />
+            </div>
+          )}
+        </div>
+      </div>
 
-      {/* New Game button */}
-      <button onClick={handleNewGame}>New Game</button>
+      <div style={{
+        display: 'flex',
+        gap: '1rem',
+        justifyContent: 'center',
+        marginTop: '2rem'
+      }}>
+        <button 
+          onClick={handleSubmitGuess} 
+          disabled={disableButtons}
+          style={{
+            padding: '0.75rem 1.5rem',
+            fontSize: '1rem',
+            borderRadius: '8px',
+            border: 'none',
+            backgroundColor: '#4834d4',
+            color: 'white',
+            cursor: disableButtons ? 'not-allowed' : 'pointer',
+            opacity: disableButtons ? 0.7 : 1,
+            transition: 'all 0.2s ease',
+          }}
+        >
+          Submit Guess
+        </button>
 
-      {/* Error message for duplicate colors */}
-      {errorMessage && <div style={{ color: 'red' }}>{errorMessage}</div>}
+        <button 
+          onClick={handleAIHint} 
+          disabled={disableButtons}
+          style={{
+            padding: '0.75rem 1.5rem',
+            fontSize: '1rem',
+            borderRadius: '8px',
+            border: 'none',
+            backgroundColor: '#00b894',
+            color: 'white',
+            cursor: disableButtons ? 'not-allowed' : 'pointer',
+            opacity: disableButtons ? 0.7 : 1,
+            transition: 'all 0.2s ease',
+            minWidth: '140px',
+          }}
+        >
+          {isThinking ? 'Thinking...' : 'Get AI Hint'}
+        </button>
+
+        <button 
+          onClick={handleNewGame}
+          style={{
+            padding: '0.75rem 1.5rem',
+            fontSize: '1rem',
+            borderRadius: '8px',
+            border: 'none',
+            backgroundColor: '#e17055',
+            color: 'white',
+            cursor: 'pointer',
+            transition: 'all 0.2s ease',
+          }}
+        >
+          New Game
+        </button>
+      </div>
+
+      {errorMessage && (
+        <div style={{ 
+          color: '#e74c3c',
+          backgroundColor: '#fde2e2',
+          padding: '1rem',
+          borderRadius: '8px',
+          marginTop: '1rem',
+          fontSize: '0.9rem'
+        }}>
+          ⚠️ {errorMessage}
+        </div>
+      )}
     </div>
   );
 };
