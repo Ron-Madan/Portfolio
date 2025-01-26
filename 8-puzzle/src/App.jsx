@@ -14,7 +14,7 @@ function App() {
       padding: 0,
       boxSizing: 'border-box'
     }}>
-      <h1>8-Puzzle Solver</h1>
+      <h1>8-Puzzle Game</h1>
       <Puzzle />
     </div>
   );
