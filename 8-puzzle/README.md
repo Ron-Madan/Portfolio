@@ -4,7 +4,7 @@ This project implements a solution for the classic 8-puzzle problem using the A*
 
 ## About the 8-Puzzle
 
-The 8-puzzle is a sliding puzzle that consists of a 3×3 grid with 8 numbered tiles and one empty space. The goal is to rearrange the tiles from a given starting configuration to reach a specific goal configuration by sliding tiles into the empty space.
+The 8-puzzle is a sliding puzzle that consists of a 3×3 grid with 8 numbered tiles and one empty space. The goal is to rearrange the tiles from a given starting configuration to reach a specific goal configuration by sliding tiles into the empty space. If you're feeling ambitious, you can also try the 15-puzzle on a 4x4 grid!
 
 ## How to Play?
 
@@ -12,11 +12,11 @@ You can click on any tile adjacent to the blank square to move that tile into th
 
 Example:
 
-<img width="678" alt="Start" src="https://github.com/user-attachments/assets/9df0e5d9-c86b-40a3-b04b-1ac2e147a424" />
+<img width="780" alt="Screenshot 2025-01-26 at 6 25 45 PM" src="https://github.com/user-attachments/assets/40b49dcb-09bb-49a6-8887-74d8c90f3e9c" />
 
-<img width="678" alt="Middle" src="https://github.com/user-attachments/assets/74b06d8c-be61-4d8c-b613-3fec2e492c05" />
+<img width="780" alt="Screenshot 2025-01-26 at 6 26 17 PM" src="https://github.com/user-attachments/assets/f6931bb5-8819-4045-84a1-8e572d0dad0c" />
 
-<img width="678" alt="End" src="https://github.com/user-attachments/assets/5a377bf2-207a-4f8b-b377-7a87d3193d97" />
+<img width="780" alt="Screenshot 2025-01-26 at 6 27 32 PM" src="https://github.com/user-attachments/assets/cd0ee3cc-1b5d-4fb8-8850-1539c72abb1d" />
 
 ## Implementation Details
 
