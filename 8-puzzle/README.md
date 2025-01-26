@@ -1,6 +1,6 @@
 # 8-Puzzle Solver using A* Search Algorithm
 
-This project implements a solution for the classic 8-puzzle problem using the A* (A-star) search algorithm with Manhattan Distance heuristic.
+This project implements a solution for the classic 8-puzzle problem using the A* (A-star) search algorithm with Manhattan Distance heuristic. Feel free to check it out, [HERE](https://8-puzzle-xi.vercel.app/)!
 
 ## About the 8-Puzzle
 
