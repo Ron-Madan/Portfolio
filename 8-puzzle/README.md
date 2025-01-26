@@ -30,7 +30,7 @@ The solver uses the A* search algorithm, which is an informed search algorithm t
 
 ### Manhattan Distance Heuristic
 
-The implementation uses an enhanced Manhattan Distance heuristic that includes linear conflict detection:
+The implementation uses Manhattan Distance with linear conflict detection:
 
 1. **Basic Manhattan Distance**:
    - Calculate horizontal and vertical distance between current and goal positions for each tile
@@ -41,61 +41,27 @@ The implementation uses an enhanced Manhattan Distance heuristic that includes l
    - Each linear conflict adds 2 moves to the heuristic estimate
    - Example: If tiles 1 and 2 are in their goal row but 2 appears before 1, this requires at least 2 additional moves to resolve
 
-This enhanced heuristic remains admissible while providing a more accurate estimate of the actual cost to reach the goal state.
-
 ### Solver Optimizations
 
 #### State Representation
-- **Compact State Storage**: States are stored as flat arrays instead of 2D matrices to reduce memory usage and improve comparison speed
 - **String-based State Tracking**: States are converted to strings for efficient hash table lookups in the visited set
 - **Immutable State Handling**: Each new state is created using array spreading to prevent unintended state mutations
 
 #### Search Optimizations
-- **Priority Queue Implementation**: Custom priority queue for efficient O(log n) insertion and removal of states
+- **Priority Queue Implementation**: Custom MinHeap implementation for efficient O(log n) insertion and removal of states
 - **Early Goal Detection**: Checks for goal state immediately after generating each new state
-- **Pruning Invalid Moves**: 
-  - Prevents moving empty tile back to its previous position
-  - Eliminates moves that would return to already visited states
 - **Move Generation**:
-  - Pre-calculated move directions (up, down, left, right) to avoid redundant calculations
+  - Pre-calculated move directions (up, down, left, right)
   - Efficient boundary checking for valid moves
-  - Smart move filtering based on empty tile position
 
 #### Memory Management
 - **Visited State Tracking**: Uses a Set data structure for O(1) lookup of previously seen states
-- **Path Reconstruction**: Maintains minimal parent references to reconstruct solution path
+- **Path Reconstruction**: Maintains path history to reconstruct solution
 - **Memory-Efficient Node Structure**: Only stores essential information in each node:
   - Current state
-  - Parent reference
+  - Path history
   - g-score (path cost)
   - h-score (heuristic value)
-
-#### Performance Enhancements
-- **Linear Conflict Detection**: 
-  - Horizontal conflict checking for tiles in the same row
-  - Vertical conflict checking for tiles in the same column
-  - Dynamically adjusts heuristic value based on detected conflicts
-- **Lazy Path Generation**: Only constructs the full solution path once the goal is found
-- **State Validation**: Early detection of unsolvable puzzle configurations
-
-#### Heuristic Optimizations
-- **Pattern Database**: Pre-computed lookup table for common subproblems
-- **Dynamic Weighting**: Adjusts heuristic weight based on search progress
-- **Conflict Detection**:
-  - Row-based conflict detection
-  - Column-based conflict detection
-  - Diagonal pattern analysis
-- **Goal State Analysis**:
-  - Pre-computed goal state positions
-  - Quick lookup for goal row/column calculations
-  - Optimized distance calculations using bit operations
-
-### Key Features
-
-- Efficient path finding using priority queue based on f-score
-- Visited state tracking to avoid cycles
-- Support for any valid 8-puzzle configuration
-- Returns the sequence of moves to reach the solution
 
 ## Usage
 ```
