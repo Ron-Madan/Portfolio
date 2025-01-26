@@ -2,37 +2,61 @@ import React from 'react';
 
 const Board = ({ board, feedback, onCellClick, currentRow }) => {
   return (
-    <div className="board">
+    <div className="board" style={{
+      backgroundColor: 'white',
+      padding: '2rem',
+      borderRadius: '12px',
+      boxShadow: '0 2px 4px rgba(0, 0, 0, 0.05)',
+      width: '100%',
+      maxWidth: '600px',
+      margin: '0 auto',
+    }}>
       {board.map((row, rowIndex) => (
         <div
           key={rowIndex}
+          data-row={rowIndex}
           className="row"
           style={{
             display: 'flex',
             alignItems: 'center',
-            border: rowIndex === currentRow ? '2px solid #007bff' : 'none', // Highlight current row
-            padding: rowIndex === currentRow ? '5px' : '0', // Optional: Add padding for the highlighted border
-            marginBottom: '5px',
+            justifyContent: 'center',
+            backgroundColor: rowIndex === currentRow ? '#f0f2f5' : 'transparent',
+            borderRadius: '8px',
+            padding: '0.5rem',
+            marginBottom: '0.5rem',
+            transition: 'all 0.2s ease',
           }}
         >
-          {/* Render the row of cells */}
-          {row.map((color, colIndex) => (
-            <div
-              key={colIndex}
-              className="cell"
-              style={{
-                backgroundColor: color || 'gray', // Display color if present, else gray
-                width: '40px',
-                height: '40px',
-                margin: '5px',
-                border: '1px solid #ccc',
-                cursor: 'pointer',
-              }}
-              onClick={() => onCellClick(rowIndex, colIndex)} // Call handleCellClick when clicked
-            />
-          ))}
-          {/* Render the feedback circles beside the row */}
-          <div className="feedback-circles" style={{ marginLeft: '10px' }}>
+          <div style={{ display: 'flex', gap: '0.5rem' }}>
+            {row.map((color, colIndex) => (
+              <div
+                key={colIndex}
+                data-row={rowIndex}
+                data-col={colIndex}
+                className="cell"
+                style={{
+                  backgroundColor: color || '#e2e8f0',
+                  width: '40px',
+                  height: '40px',
+                  borderRadius: '50%',
+                  cursor: rowIndex === currentRow ? 'pointer' : 'default',
+                  transition: 'all 0.2s ease',
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                  border: color ? 'none' : '2px dashed #cbd5e0',
+                  boxSizing: 'border-box',
+                }}
+                onClick={() => onCellClick(rowIndex, colIndex)}
+              />
+            ))}
+          </div>
+          
+          <div className="feedback-circles" style={{ 
+            marginLeft: '1.5rem',
+            display: 'flex',
+            gap: '0.25rem',
+            flexWrap: 'wrap',
+            width: '60px'
+          }}>
             {renderFeedbackCircles(feedback && feedback[rowIndex])}
           </div>
         </div>
@@ -41,32 +65,70 @@ const Board = ({ board, feedback, onCellClick, currentRow }) => {
   );
 };
 
-// Function to render feedback circles for a given guess
 const renderFeedbackCircles = (feedback) => {
+  const circleStyle = {
+    width: '12px',
+    height: '12px',
+    borderRadius: '50%',
+    margin: '2px',
+    transition: 'all 0.2s ease',
+    backgroundColor: 'transparent',
+    border: '1px solid #cbd5e0',
+    boxSizing: 'border-box',
+  };
+
   const circles = [];
 
   if (!feedback) {
-    // If no feedback, render 5 empty circles
+    // Default empty circles
     for (let i = 0; i < 5; i++) {
-      circles.push(<div key={`empty-${i}`} className="circle wrong"></div>);
+      circles.push(
+        <div 
+          key={`empty-${i}`} 
+          style={circleStyle}
+        />
+      );
     }
   } else {
     const [correctPosition, correctColor] = feedback;
 
-    // Add black circles for correct position
+    // Correct position circles (black)
     for (let i = 0; i < correctPosition; i++) {
-      circles.push(<div key={`black-${i}`} className="circle correctPosition"></div>);
+      circles.push(
+        <div 
+          key={`black-${i}`} 
+          style={{
+            ...circleStyle,
+            backgroundColor: '#000000',
+            border: '1px solid #000000',
+          }}
+        />
+      );
     }
 
-    // Add gray circles for correct color but wrong position
+    // Correct color circles (white with black border)
     for (let i = 0; i < correctColor; i++) {
-      circles.push(<div key={`gray-${i}`} className="circle correctColor"></div>);
+      circles.push(
+        <div 
+          key={`white-${i}`} 
+          style={{
+            ...circleStyle,
+            backgroundColor: '#ffffff',
+            border: '1px solid #000000',
+          }}
+        />
+      );
     }
 
-    // Add empty circles (wrong) to fill up the remaining spots
+    // Empty circles for remaining spots
     const remaining = 5 - (correctPosition + correctColor);
     for (let i = 0; i < remaining; i++) {
-      circles.push(<div key={`empty-${i}`} className="circle wrong"></div>);
+      circles.push(
+        <div 
+          key={`empty-${i}`} 
+          style={circleStyle}
+        />
+      );
     }
   }
 
