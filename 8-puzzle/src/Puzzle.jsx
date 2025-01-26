@@ -391,7 +391,7 @@ const Puzzle = () => {
           {solving ? "Solving..." : "Solve"}
         </button>
         <button 
-          onClick={() => setPuzzle(generateRandomPuzzle())} 
+          onClick={() => setPuzzle(generateRandomPuzzle(puzzleType))}
           disabled={solving}
           style={{
             padding: '10px 20px',
