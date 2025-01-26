@@ -1,10 +1,27 @@
 import React, { useState } from "react";
 import { aStar, manhattanDistance } from "./Solver";
 
+const prefersDarkMode = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+
+const PUZZLE_CONFIGS = {
+  '8': {
+    size: 3,
+    goalState: [1, 2, 3, 4, 5, 6, 7, 8, 0],
+    tileSize: 100,
+    gridSize: 306
+  },
+  '15': {
+    size: 4,
+    goalState: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0],
+    tileSize: 75,
+    gridSize: 306
+  }
+};
+
 const goalState = [1, 2, 3, 4, 5, 6, 7, 8, 0];
 
 // Helper to check if puzzle is solvable
-const isSolvable = (puzzle) => {
+const isSolvable = (puzzle, size = 3) => {
   let inversions = 0;
   for (let i = 0; i < puzzle.length - 1; i++) {
     for (let j = i + 1; j < puzzle.length; j++) {
@@ -13,25 +30,37 @@ const isSolvable = (puzzle) => {
       }
     }
   }
-  return inversions % 2 === 0;
+  
+  if (size % 2 === 1) {
+    // For odd-sized grids (e.g., 3x3), the number of inversions must be even
+    return inversions % 2 === 0;
+  } else {
+    // For even-sized grids (e.g., 4x4), the number of inversions plus the row of the blank tile (counted from bottom)
+    // must be odd for the puzzle to be solvable
+    const blankRow = Math.floor(puzzle.indexOf(0) / size);
+    const rowFromBottom = size - blankRow;
+    return (inversions + rowFromBottom) % 2 === 1;
+  }
 };
 
 // Generate random solvable puzzle
-const generateRandomPuzzle = () => {
+const generateRandomPuzzle = (puzzleType) => {
+  const size = PUZZLE_CONFIGS[puzzleType].size;
   let puzzle;
   do {
-    puzzle = [...Array(9).keys()]; // [0,1,2,3,4,5,6,7,8]
+    puzzle = Array.from({length: size * size}, (_, i) => i); // Creates [0,1,2,...,8] for 3x3 or [0,1,2,...,15] for 4x4
     // Fisher-Yates shuffle
     for (let i = puzzle.length - 1; i > 0; i--) {
       const j = Math.floor(Math.random() * (i + 1));
       [puzzle[i], puzzle[j]] = [puzzle[j], puzzle[i]];
     }
-  } while (!isSolvable(puzzle));
+  } while (!isSolvable(puzzle, size));
   return puzzle;
 };
 
 const Puzzle = () => {
-  const [puzzle, setPuzzle] = useState(generateRandomPuzzle());
+  const [puzzleType, setPuzzleType] = useState('8');
+  const [puzzle, setPuzzle] = useState(generateRandomPuzzle('8'));
   const [solving, setSolving] = useState(false);
   const [inputMode, setInputMode] = useState(false);
   const [inputValue, setInputValue] = useState('');
@@ -40,9 +69,9 @@ const Puzzle = () => {
 
   // Add function to check if puzzle is solved
   const checkSolved = (currentPuzzle) => {
+    const goalState = PUZZLE_CONFIGS[puzzleType].goalState;
     if (currentPuzzle.every((value, index) => value === goalState[index])) {
       setShowSuccess(true);
-      // Hide the success message after 3 seconds
       setTimeout(() => setShowSuccess(false), 3000);
     }
   };
@@ -51,11 +80,12 @@ const Puzzle = () => {
   const handleTileClick = (idx) => {
     if (solving) return;
     
+    const size = PUZZLE_CONFIGS[puzzleType].size;
     const emptyIdx = puzzle.indexOf(0);
     // Check if clicked tile is adjacent to empty space
     const isAdjacent = (
-      (Math.abs(idx - emptyIdx) === 1 && Math.floor(idx/3) === Math.floor(emptyIdx/3)) || // Same row
-      (Math.abs(idx - emptyIdx) === 3) // Same column
+      (Math.abs(idx - emptyIdx) === 1 && Math.floor(idx/size) === Math.floor(emptyIdx/size)) || // Same row
+      (Math.abs(idx - emptyIdx) === size) // Same column
     );
 
     if (isAdjacent) {
@@ -70,11 +100,11 @@ const Puzzle = () => {
   const handleDragStart = (e, idx) => {
     if (solving) return;
     
+    const size = PUZZLE_CONFIGS[puzzleType].size;
     const emptyIdx = puzzle.indexOf(0);
-    // Only allow dragging if tile is adjacent to empty space
     const isAdjacent = (
-      (Math.abs(idx - emptyIdx) === 1 && Math.floor(idx/3) === Math.floor(emptyIdx/3)) || // Same row
-      (Math.abs(idx - emptyIdx) === 3) // Same column
+      (Math.abs(idx - emptyIdx) === 1 && Math.floor(idx/size) === Math.floor(emptyIdx/size)) || // Same row
+      (Math.abs(idx - emptyIdx) === size) // Same column
     );
 
     if (isAdjacent) {
@@ -105,9 +135,14 @@ const Puzzle = () => {
   };
 
   // Update solvePuzzle to handle null solution
-  const solvePuzzle = () => {
+  const solvePuzzle = async () => {
+    // Immediately update UI state
     setSolving(true);
-    const solution = aStar(puzzle, goalState);
+    
+    // Small delay to ensure UI updates are visible
+    await new Promise(resolve => setTimeout(resolve, 50));
+    
+    const solution = aStar(puzzle, PUZZLE_CONFIGS[puzzleType].goalState);
     if (solution) {
       animateSolution(solution);
     } else {
@@ -132,19 +167,25 @@ const Puzzle = () => {
   };
 
   const handleInputChange = (e) => {
-    const value = e.target.value.replace(/[^0-8,\s]/g, ''); // Only allow 0-8 and commas
+    // Update regex based on puzzle type
+    const regex = puzzleType === '8' ? /[^0-8,\s]/g : /[^0-9,\s]|1[6-9]|[2-9]\d/g;
+    const value = e.target.value.replace(regex, '');
     setInputValue(value);
   };
 
   const handleInputSubmit = () => {
+    const size = PUZZLE_CONFIGS[puzzleType].size;
+    const maxNum = size * size - 1;
     const numbers = inputValue.split(',').map(n => parseInt(n.trim()));
-    if (numbers.length !== 9 || 
-        !numbers.every(n => n >= 0 && n <= 8) || 
-        new Set(numbers).size !== 9) {
-      alert('Please enter valid numbers (0-8) separated by commas');
+    
+    if (numbers.length !== size * size || 
+        !numbers.every(n => n >= 0 && n <= maxNum) || 
+        new Set(numbers).size !== size * size) {
+      alert(`Please enter valid numbers (0-${maxNum}) separated by commas`);
       return;
     }
-    if (!isSolvable(numbers)) {
+    
+    if (!isSolvable(numbers, size)) {
       alert('This puzzle configuration is not solvable');
       return;
     }
@@ -153,11 +194,22 @@ const Puzzle = () => {
     setInputValue('');
   };
 
+  // Update button click handler
+  const handlePuzzleTypeChange = () => {
+    const newType = puzzleType === '8' ? '15' : '8';
+    setPuzzleType(newType);
+    setPuzzle(generateRandomPuzzle(newType)); // Generate new puzzle with correct size
+  };
+
+  // Update renderTile to use current config
   const renderTile = (value, idx) => {
+    const config = PUZZLE_CONFIGS[puzzleType];
+    const size = config.size;
+    const tileSize = config.tileSize;
     const emptyIdx = puzzle.indexOf(0);
     const isAdjacent = (
-      (Math.abs(idx - emptyIdx) === 1 && Math.floor(idx/3) === Math.floor(emptyIdx/3)) || 
-      (Math.abs(idx - emptyIdx) === 3)
+      (Math.abs(idx - emptyIdx) === 1 && Math.floor(idx/size) === Math.floor(emptyIdx/size)) || 
+      (Math.abs(idx - emptyIdx) === size)
     );
 
     return (
@@ -170,21 +222,26 @@ const Puzzle = () => {
         onDragOver={value === 0 ? handleDragOver : undefined}
         onDrop={value === 0 ? (e) => handleDrop(e, idx) : undefined}
         style={{
-          width: '100px',
-          height: '100px',
-          border: '2px solid #333',
+          width: `${tileSize}px`,
+          height: `${tileSize}px`,
+          border: `2px solid ${prefersDarkMode ? '#666' : '#333'}`,
           position: 'absolute',
           display: 'flex',
           alignItems: 'center',
           justifyContent: 'center',
-          fontSize: '24px',
+          fontSize: puzzleType === '15' ? '18px' : '24px',
           fontWeight: 'bold',
-          backgroundColor: value === 0 ? '#f0f0f0' : '#ffffff',
+          backgroundColor: value === 0 
+            ? (prefersDarkMode ? '#2a2a2a' : '#f0f0f0')
+            : (prefersDarkMode ? '#333' : '#ffffff'),
+          color: prefersDarkMode ? '#fff' : '#000',
           cursor: (value !== 0 && isAdjacent && !solving) ? 'grab' : 'default',
-          transform: `translate(${(idx % 3) * 102}px, ${Math.floor(idx / 3) * 102}px)`,
+          transform: `translate(${(idx % size) * (tileSize + 2)}px, ${Math.floor(idx / size) * (tileSize + 2)}px)`,
           transition: 'transform 0.3s ease',
           borderRadius: '8px',
-          boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
+          boxShadow: prefersDarkMode 
+            ? '0 2px 4px rgba(0,0,0,0.3)' 
+            : '0 2px 4px rgba(0,0,0,0.1)',
           userSelect: 'none',
           opacity: draggingTile === idx ? '0.5' : '1',
           WebkitUserDrag: 'none',
@@ -208,6 +265,23 @@ const Puzzle = () => {
       margin: '0 auto',
       position: 'relative'
     }}>
+      <button 
+        onClick={handlePuzzleTypeChange}
+        style={{
+          padding: '10px 20px',
+          fontSize: '16px',
+          backgroundColor: '#9C27B0',
+          color: 'white',
+          border: 'none',
+          borderRadius: '5px',
+          cursor: 'pointer',
+          marginBottom: '20px',
+          boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+        }}
+      >
+        Switch to {puzzleType === '8' ? '15' : '8'}-puzzle
+      </button>
+
       {showSuccess && (
         <div style={{
           position: 'absolute',
@@ -240,7 +314,7 @@ const Puzzle = () => {
             type="text"
             value={inputValue}
             onChange={handleInputChange}
-            placeholder="Enter numbers 0-8 separated by commas"
+            placeholder={`Enter numbers 0-${PUZZLE_CONFIGS[puzzleType].size * PUZZLE_CONFIGS[puzzleType].size - 1} separated by commas`}
             style={{
               padding: '8px',
               width: '300px',
@@ -284,10 +358,10 @@ const Puzzle = () => {
 
       <div style={{ 
         position: 'relative',
-        width: '306px',
-        height: '306px',
-        backgroundColor: '#f8f8f8',
-        border: '2px solid #ccc',
+        width: `${PUZZLE_CONFIGS[puzzleType].gridSize}px`,
+        height: `${PUZZLE_CONFIGS[puzzleType].gridSize}px`,
+        backgroundColor: prefersDarkMode ? '#1a1a1a' : '#f8f8f8',
+        border: `2px solid ${prefersDarkMode ? '#666' : '#ccc'}`,
         borderRadius: '10px',
         padding: '8px',
         margin: '0 auto'
