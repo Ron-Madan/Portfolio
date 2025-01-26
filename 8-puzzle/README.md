@@ -8,10 +8,11 @@ The 8-puzzle is a sliding puzzle that consists of a 3×3 grid with 8 numbered ti
 
 Example:
 
-Start State    Goal State
-1 2 3          1 2 3
-4 0 6    →     4 5 6
-7 5 8          7 8 0
+<img width="678" alt="Start" src="https://github.com/user-attachments/assets/9df0e5d9-c86b-40a3-b04b-1ac2e147a424" />
+
+<img width="678" alt="Middle" src="https://github.com/user-attachments/assets/74b06d8c-be61-4d8c-b613-3fec2e492c05" />
+
+<img width="678" alt="End" src="https://github.com/user-attachments/assets/5a377bf2-207a-4f8b-b377-7a87d3193d97" />
 
 ## Implementation Details
 
@@ -40,7 +41,6 @@ This provides an admissible heuristic (never overestimates the actual cost), mak
 
 ## Usage
 ```
-python
 import { aStar } from './Solver.js';
 const startState = [1, 2, 3, 4, 0, 6, 7, 5, 8];
 const goalState = [1, 2, 3, 4, 5, 6, 7, 8, 0];
