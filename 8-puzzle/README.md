@@ -71,13 +71,11 @@ This enhanced heuristic remains admissible while providing a more accurate estim
   - h-score (heuristic value)
 
 #### Performance Enhancements
-- **Heuristic Caching**: Caches Manhattan distance calculations for repeated states
 - **Linear Conflict Detection**: 
   - Horizontal conflict checking for tiles in the same row
   - Vertical conflict checking for tiles in the same column
   - Dynamically adjusts heuristic value based on detected conflicts
 - **Lazy Path Generation**: Only constructs the full solution path once the goal is found
-- **Batch Processing**: Processes multiple states in batches to reduce overhead
 - **State Validation**: Early detection of unsolvable puzzle configurations
 
 #### Heuristic Optimizations
