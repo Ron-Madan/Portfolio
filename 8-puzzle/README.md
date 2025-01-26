@@ -6,6 +6,10 @@ This project implements a solution for the classic 8-puzzle problem using the A*
 
 The 8-puzzle is a sliding puzzle that consists of a 3×3 grid with 8 numbered tiles and one empty space. The goal is to rearrange the tiles from a given starting configuration to reach a specific goal configuration by sliding tiles into the empty space.
 
+## How to Play?
+
+You can click on any tile adjacent to the blank square to move that tile into the blank space. If you get stuck, hit "Solve" and watch the AI work its magic!
+
 Example:
 
 <img width="678" alt="Start" src="https://github.com/user-attachments/assets/9df0e5d9-c86b-40a3-b04b-1ac2e147a424" />
