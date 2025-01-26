@@ -35,6 +35,17 @@ const Puzzle = () => {
   const [solving, setSolving] = useState(false);
   const [inputMode, setInputMode] = useState(false);
   const [inputValue, setInputValue] = useState('');
+  const [draggingTile, setDraggingTile] = useState(null);
+  const [showSuccess, setShowSuccess] = useState(false);
+
+  // Add function to check if puzzle is solved
+  const checkSolved = (currentPuzzle) => {
+    if (currentPuzzle.every((value, index) => value === goalState[index])) {
+      setShowSuccess(true);
+      // Hide the success message after 3 seconds
+      setTimeout(() => setShowSuccess(false), 3000);
+    }
+  };
 
   // Add click handler for tiles
   const handleTileClick = (idx) => {
@@ -51,7 +62,46 @@ const Puzzle = () => {
       const newPuzzle = [...puzzle];
       [newPuzzle[idx], newPuzzle[emptyIdx]] = [newPuzzle[emptyIdx], newPuzzle[idx]];
       setPuzzle(newPuzzle);
+      checkSolved(newPuzzle);
     }
+  };
+
+  // Add drag handlers
+  const handleDragStart = (e, idx) => {
+    if (solving) return;
+    
+    const emptyIdx = puzzle.indexOf(0);
+    // Only allow dragging if tile is adjacent to empty space
+    const isAdjacent = (
+      (Math.abs(idx - emptyIdx) === 1 && Math.floor(idx/3) === Math.floor(emptyIdx/3)) || // Same row
+      (Math.abs(idx - emptyIdx) === 3) // Same column
+    );
+
+    if (isAdjacent) {
+      setDraggingTile(idx);
+      e.dataTransfer.effectAllowed = 'move';
+    } else {
+      e.preventDefault();
+    }
+  };
+
+  const handleDragOver = (e) => {
+    e.preventDefault();
+    e.dataTransfer.dropEffect = 'move';
+  };
+
+  const handleDrop = (e, idx) => {
+    e.preventDefault();
+    if (draggingTile === null || solving) return;
+
+    const emptyIdx = puzzle.indexOf(0);
+    if (idx === emptyIdx) {
+      const newPuzzle = [...puzzle];
+      [newPuzzle[draggingTile], newPuzzle[emptyIdx]] = [newPuzzle[emptyIdx], newPuzzle[draggingTile]];
+      setPuzzle(newPuzzle);
+      checkSolved(newPuzzle);
+    }
+    setDraggingTile(null);
   };
 
   // Update solvePuzzle to handle null solution
@@ -76,6 +126,7 @@ const Puzzle = () => {
       } else {
         clearInterval(interval);
         setSolving(false);
+        checkSolved(solution[solution.length - 1]);
       }
     }, 1000); // 1 second per move
   };
@@ -103,11 +154,21 @@ const Puzzle = () => {
   };
 
   const renderTile = (value, idx) => {
+    const emptyIdx = puzzle.indexOf(0);
+    const isAdjacent = (
+      (Math.abs(idx - emptyIdx) === 1 && Math.floor(idx/3) === Math.floor(emptyIdx/3)) || 
+      (Math.abs(idx - emptyIdx) === 3)
+    );
+
     return (
       <div
         key={idx}
         className={`tile ${value === 0 ? "empty" : ""}`}
         onClick={() => handleTileClick(idx)}
+        draggable={value !== 0 && isAdjacent && !solving}
+        onDragStart={(e) => handleDragStart(e, idx)}
+        onDragOver={value === 0 ? handleDragOver : undefined}
+        onDrop={value === 0 ? (e) => handleDrop(e, idx) : undefined}
         style={{
           width: '100px',
           height: '100px',
@@ -119,12 +180,16 @@ const Puzzle = () => {
           fontSize: '24px',
           fontWeight: 'bold',
           backgroundColor: value === 0 ? '#f0f0f0' : '#ffffff',
-          cursor: value !== 0 ? 'pointer' : 'default',
+          cursor: (value !== 0 && isAdjacent && !solving) ? 'grab' : 'default',
           transform: `translate(${(idx % 3) * 102}px, ${Math.floor(idx / 3) * 102}px)`,
           transition: 'transform 0.3s ease',
           borderRadius: '8px',
           boxShadow: '0 2px 4px rgba(0,0,0,0.1)',
-          userSelect: 'none'
+          userSelect: 'none',
+          opacity: draggingTile === idx ? '0.5' : '1',
+          WebkitUserDrag: 'none',
+          MozUserDrag: 'none',
+          msUserDrag: 'none'
         }}
       >
         {value !== 0 ? value : ""}
@@ -143,6 +208,26 @@ const Puzzle = () => {
       margin: '0 auto',
       position: 'relative'
     }}>
+      {showSuccess && (
+        <div style={{
+          position: 'absolute',
+          top: '50%',
+          left: '50%',
+          transform: 'translate(-50%, -50%)',
+          backgroundColor: '#4CAF50',
+          color: 'white',
+          padding: '20px 40px',
+          borderRadius: '10px',
+          fontSize: '24px',
+          fontWeight: 'bold',
+          zIndex: 1000,
+          animation: 'fadeIn 0.5s ease-in-out',
+          boxShadow: '0 4px 8px rgba(0,0,0,0.2)'
+        }}>
+          Solved!
+        </div>
+      )}
+      
       {inputMode ? (
         <div style={{ 
           marginBottom: '20px',
@@ -265,5 +350,18 @@ const Puzzle = () => {
     </div>
   );
 };
+
+// Add this to your existing styles or in a separate CSS file
+const styles = `
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translate(-50%, -60%); }
+    to { opacity: 1; transform: translate(-50%, -50%); }
+  }
+`;
+
+// Add the styles to the document
+const styleSheet = document.createElement("style");
+styleSheet.innerText = styles;
+document.head.appendChild(styleSheet);
 
 export default Puzzle;
