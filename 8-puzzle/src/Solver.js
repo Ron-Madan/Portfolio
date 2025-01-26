@@ -68,9 +68,6 @@ function encodeState(state) {
     return state.join(',');
 }
 
-// Pattern database for common subproblems (simplified version)
-const patternDB = new Map();
-
 // A* Solver with optimizations
 function aStar(startState, goalState) {
     const size = Math.sqrt(startState.length);
