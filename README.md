@@ -8,4 +8,4 @@ I am always available through my LinkedIn: https://www.LinkedIn.com/in/Raunak-Ma
 
 Best,
 
-Raunak.
+Raunak
